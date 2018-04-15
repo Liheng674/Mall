@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lee.mapper.SkuMapper">
+
+	<insert useGeneratedKeys="true" keyColumn="id" keyProperty="id" id="insert_sku">
+		insert into t_mall_sku(shp_id,kc,jg,sku_mch,kcdz) 
+		values(#{shp_id},#{kc},#{jg},#{sku_mch},#{kcdz})
+	</insert>
+	
+	<insert id="insert_sku_attr_value">
+		insert into t_mall_sku_attr_value(shp_id,sku_id,shxm_id,shxzh_id) values
+		<foreach collection="list_attr" item="attr" separator=",">
+			(#{shp_id},#{sku_id},#{attr.shxm_id},#{attr.shxzh_id})
+		</foreach>
+	</insert>
+</mapper>

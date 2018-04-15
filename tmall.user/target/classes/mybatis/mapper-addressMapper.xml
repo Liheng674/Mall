@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lee.mapper.AddressMapper">
+	<select id="select_address_byId" resultType="com.lee.bean.T_MALL_ADDRESS">
+		select * from t_mall_address where id=#{id}
+	</select>
+	
+	<select id="select_address_byUser" resultType="com.lee.bean.T_MALL_ADDRESS">
+		select * from t_mall_address where yh_id=#{id}
+	</select>
+</mapper>

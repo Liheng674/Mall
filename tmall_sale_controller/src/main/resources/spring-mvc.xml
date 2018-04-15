@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<context:property-placeholder location="classpath:ws.properties"/>
+
+	<!-- 1、包扫描 -->
+	<context:component-scan base-package="com.lee.controller"
+		use-default-filters="false">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+		<context:include-filter type="annotation"
+			expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+	</context:component-scan>
+
+	<context:component-scan base-package="com.atguigu.myRedis"
+		use-default-filters="false">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Service" />
+	</context:component-scan>
+
+	<!-- 2、视图解析器 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- 3、SpringMVC上传文件时，需要配置MultipartResolver处理器 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8" />
+		<!-- 指定所上传文件的总大小,单位字节。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+		<property name="maxUploadSize" value="10240000" />
+	</bean>
+
+	<!-- 4、启动注解 -->
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
+	<!-- Spring管理MyFactoryBean的对象创建 -->
+	<bean id="loginServer" class="com.lee.util.MyFactoryBean">
+		<!-- 属性赋值 -->
+		<property name="url" value="${login_url}"></property>
+		<property name="t" value="com.lee.server.LoginServer"></property>
+	</bean>
+	
+	<bean id="TestServer" class="com.lee.util.MyFactoryBean">
+		<!-- 属性赋值 -->
+		<property name="url" value="${test_url}"></property>
+		<property name="t" value="com.lee.server.TestServer"></property>
+	</bean>
+	
+	<bean id="AddressServer" class="com.lee.util.MyFactoryBean">
+		<!-- 属性赋值 -->
+		<property name="url" value="${address_url}"></property>
+		<property name="t" value="com.lee.server.AddressServer"></property>
+	</bean>
+	
+	<!-- 使用dubbo发布服务 -->
+	<!-- 1. 提供方应用信息，用于计算依赖关系 -->
+	<dubbo:application name="sale_client" />
+	<!-- 2. 注册中心地址 -->
+	<dubbo:registry protocol="zookeeper" address="192.168.152.128:2181" />
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:reference id="attrServiceImp" interface="com.lee.service.AttrService"/>
+	<dubbo:reference id="cartServiceImp" interface="com.lee.service.CartService"/>
+	<dubbo:reference id="itemServiceImp" interface="com.lee.service.ItemService"/>
+	<dubbo:reference id="listServiceImp" interface="com.lee.service.ListService"/>
+	<dubbo:reference id="loginMessageImp" interface="com.lee.service.LoginMessage"/>
+	<dubbo:reference id="orderServiceImp" interface="com.lee.service.OrderService"/>
+</beans>
